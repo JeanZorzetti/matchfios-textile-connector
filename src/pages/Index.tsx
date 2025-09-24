@@ -1,12 +1,36 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useEffect } from "react";
+import Header from "@/components/Header";
+import HeroSection from "@/components/HeroSection";
+import WhatIsSection from "@/components/WhatIsSection";
+import SuppliersSection from "@/components/SuppliersSection";
+import IndustriesSection from "@/components/IndustriesSection";
+import PricingSection from "@/components/PricingSection";
+import SignupSection from "@/components/SignupSection";
+import Footer from "@/components/Footer";
 
 const Index = () => {
+  useEffect(() => {
+    // Update page title and meta description for SEO
+    document.title = "Matchfios - Plataforma B2B para Indústria Têxtil";
+    
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 'Conecte fornecedores e indústrias têxteis numa plataforma inteligente. Hub centralizado de propostas, análise de mercado e negócios mais eficientes.');
+    }
+  }, []);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen">
+      <Header />
+      <main>
+        <HeroSection />
+        <WhatIsSection />
+        <SuppliersSection />
+        <IndustriesSection />
+        <PricingSection />
+        <SignupSection />
+      </main>
+      <Footer />
     </div>
   );
 };
