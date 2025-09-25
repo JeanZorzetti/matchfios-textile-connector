@@ -5,8 +5,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 const SignupSection = () => {
+  const scrollRef = useScrollAnimation();
+  
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -42,19 +45,19 @@ const SignupSection = () => {
   };
 
   return (
-    <section id="signup" className="py-20 bg-gradient-to-br from-brand-navy to-brand-navy/90 text-white">
+    <section ref={scrollRef} id="signup" className="py-20 bg-gradient-to-br from-brand-navy to-brand-navy/90 text-white">
       <div className="container mx-auto px-6">
         <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 scroll-fade-in">
             Faça Parte da Revolução <br />
-            na <span className="text-accent">Indústria Têxtil</span>
+            na <span className="text-accent animate-float">Indústria Têxtil</span>
           </h2>
-          <p className="text-xl text-white/90 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl text-white/90 max-w-3xl mx-auto leading-relaxed scroll-fade-in">
             Inscreva-se para receber acesso antecipado e ser o primeiro a saber do nosso lançamento oficial.
           </p>
         </div>
 
-        <Card className="max-w-md mx-auto bg-white/95 backdrop-blur-sm">
+        <Card className="max-w-md mx-auto bg-white/95 backdrop-blur-sm hover-lift hover-glow scroll-fade-in animate-scale-in">
           <CardHeader>
             <CardTitle className="text-2xl font-bold text-brand-navy text-center">
               Inscrição para o Lançamento
@@ -62,7 +65,7 @@ const SignupSection = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
+              <div className="scroll-fade-in">
                 <Label htmlFor="name" className="text-brand-gray">
                   O seu nome
                 </Label>
@@ -72,12 +75,12 @@ const SignupSection = () => {
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="Digite o seu nome completo"
-                  className="mt-1"
+                  className="mt-1 transition-all duration-300 focus:scale-105"
                   required
                 />
               </div>
 
-              <div>
+              <div className="scroll-fade-in">
                 <Label htmlFor="email" className="text-brand-gray">
                   O seu email
                 </Label>
@@ -87,12 +90,12 @@ const SignupSection = () => {
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="Digite o seu email"
-                  className="mt-1"
+                  className="mt-1 transition-all duration-300 focus:scale-105"
                   required
                 />
               </div>
 
-              <div>
+              <div className="scroll-fade-in">
                 <Label className="text-brand-gray">
                   Eu sou:
                 </Label>
@@ -100,7 +103,7 @@ const SignupSection = () => {
                   value={formData.type} 
                   onValueChange={(value) => setFormData({ ...formData, type: value })}
                 >
-                  <SelectTrigger className="mt-1">
+                  <SelectTrigger className="mt-1 transition-all duration-300 focus:scale-105">
                     <SelectValue placeholder="Selecione uma opção" />
                   </SelectTrigger>
                   <SelectContent>
@@ -113,7 +116,7 @@ const SignupSection = () => {
               <Button 
                 type="submit" 
                 variant="cta" 
-                className="w-full"
+                className="w-full btn-modern hover-glow animate-pulse-glow"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Processando..." : "Inscrever-me Agora"}

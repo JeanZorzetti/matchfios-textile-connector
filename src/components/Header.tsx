@@ -21,25 +21,25 @@ const Header = () => {
           <nav className="hidden md:flex items-center space-x-8">
             <button 
               onClick={() => scrollToSection('what-is')}
-              className="text-brand-gray hover:text-brand-navy transition-colors"
+              className="nav-link text-brand-gray"
             >
               O Que É?
             </button>
             <button 
               onClick={() => scrollToSection('for-suppliers')}
-              className="text-brand-gray hover:text-brand-navy transition-colors"
+              className="nav-link text-brand-gray"
             >
               Para Fornecedores
             </button>
             <button 
               onClick={() => scrollToSection('for-industries')}
-              className="text-brand-gray hover:text-brand-navy transition-colors"
+              className="nav-link text-brand-gray"
             >
               Para Indústrias
             </button>
             <button 
               onClick={() => scrollToSection('pricing')}
-              className="text-brand-gray hover:text-brand-navy transition-colors"
+              className="nav-link text-brand-gray"
             >
               Planos
             </button>
@@ -49,6 +49,7 @@ const Header = () => {
           <Button 
             variant="nav"
             onClick={() => scrollToSection('signup')}
+            className="btn-modern hover-glow"
           >
             Cadastre-se
           </Button>

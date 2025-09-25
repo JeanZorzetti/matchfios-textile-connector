@@ -1,8 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check } from "lucide-react";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 const PricingSection = () => {
+  const scrollRef = useScrollAnimation();
+
   const plans = [
     {
       title: "Plano Vendedor",
@@ -38,10 +41,10 @@ const PricingSection = () => {
   };
 
   return (
-    <section id="pricing" className="py-20 bg-background">
+    <section ref={scrollRef} id="pricing" className="py-20 bg-background">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-brand-navy mb-6">
+          <h2 className="text-4xl md:text-5xl font-bold text-brand-navy mb-6 scroll-fade-in">
             Planos Simples e Transparentes <br />
             Para Impulsionar o Seu Negócio
           </h2>
@@ -51,13 +54,14 @@ const PricingSection = () => {
           {plans.map((plan, index) => (
             <Card 
               key={index} 
-              className={`relative transition-all duration-300 hover:shadow-xl ${
-                plan.highlight ? 'border-accent shadow-lg scale-105' : 'hover:scale-105'
+              className={`relative hover-lift hover-glow scroll-fade-in transition-all duration-500 ${
+                plan.highlight ? 'border-accent shadow-lg animate-pulse-glow' : ''
               }`}
+              style={{ animationDelay: `${index * 0.2}s` }}
             >
               {plan.highlight && (
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <span className="bg-accent text-white px-4 py-1 rounded-full text-sm font-semibold">
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 animate-bounce-in">
+                  <span className="bg-accent text-white px-4 py-1 rounded-full text-sm font-semibold animate-float">
                     Mais Popular
                   </span>
                 </div>
@@ -68,7 +72,7 @@ const PricingSection = () => {
                   {plan.title}
                 </CardTitle>
                 <div className="mb-4">
-                  <span className="text-5xl font-bold text-accent">{plan.price}</span>
+                  <span className="text-5xl font-bold text-accent animate-scale-in">{plan.price}</span>
                   <span className="text-brand-gray ml-2">{plan.period}</span>
                 </div>
               </CardHeader>
@@ -76,8 +80,8 @@ const PricingSection = () => {
               <CardContent className="pt-0">
                 <div className="space-y-4 mb-8">
                   {plan.features.map((feature, featureIndex) => (
-                    <div key={featureIndex} className="flex items-center gap-3">
-                      <div className="w-5 h-5 bg-accent rounded-full flex items-center justify-center flex-shrink-0">
+                    <div key={featureIndex} className="flex items-center gap-3 scroll-fade-in" style={{ animationDelay: `${(index * 0.2) + (featureIndex * 0.1)}s` }}>
+                      <div className="w-5 h-5 bg-accent rounded-full flex items-center justify-center flex-shrink-0 animate-bounce-in">
                         <Check className="w-3 h-3 text-white" />
                       </div>
                       <span className="text-brand-gray">{feature}</span>
@@ -87,7 +91,7 @@ const PricingSection = () => {
                 
                 <Button 
                   variant={plan.highlight ? "cta" : "nav"}
-                  className="w-full"
+                  className="w-full btn-modern hover-glow"
                   onClick={scrollToSignup}
                 >
                   {plan.ctaText}
