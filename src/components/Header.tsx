@@ -1,11 +1,31 @@
 import { Button } from "@/components/ui/button";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const Header = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
+
   const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+    if (isHomePage) {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else {
+      // If not on homepage, navigate to homepage first then scroll
+      navigate('/');
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
     }
+  };
+
+  const navigateToEscopo = () => {
+    navigate('/escopo');
   };
 
   return (
@@ -13,9 +33,12 @@ const Header = () => {
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <div className="text-2xl font-bold text-brand-navy">
+          <button
+            onClick={() => navigate('/')}
+            className="text-2xl font-bold text-brand-navy hover:text-brand-blue transition-colors cursor-pointer"
+          >
             Matchfios
-          </div>
+          </button>
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
@@ -37,11 +60,17 @@ const Header = () => {
             >
               Para Indústrias
             </button>
-            <button 
+            <button
               onClick={() => scrollToSection('pricing')}
               className="nav-link text-brand-gray"
             >
               Planos
+            </button>
+            <button
+              onClick={navigateToEscopo}
+              className="nav-link text-brand-gray"
+            >
+              Escopo
             </button>
           </nav>
 
