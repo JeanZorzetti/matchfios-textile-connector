@@ -1,15 +1,67 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, CheckSquare, Square, Database, Code, Palette, Settings } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
+import { ArrowLeft, CheckSquare, Square, Database, Code, Palette, Settings, MessageSquare } from "lucide-react";
 
 const ModuleDetail = () => {
   const { moduleId } = useParams();
   const navigate = useNavigate();
+
+  // Estado para controlar checkboxes e observações
+  const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
+  const [observations, setObservations] = useState<Record<string, string>>({});
+
+  // Carregar dados do localStorage
+  useEffect(() => {
+    const savedChecked = localStorage.getItem(`module-${moduleId}-checked`);
+    const savedObservations = localStorage.getItem(`module-${moduleId}-observations`);
+
+    if (savedChecked) {
+      setCheckedItems(JSON.parse(savedChecked));
+    }
+    if (savedObservations) {
+      setObservations(JSON.parse(savedObservations));
+    }
+  }, [moduleId]);
+
+  // Salvar dados no localStorage
+  const saveToLocalStorage = (checked: Record<string, boolean>, obs: Record<string, string>) => {
+    localStorage.setItem(`module-${moduleId}-checked`, JSON.stringify(checked));
+    localStorage.setItem(`module-${moduleId}-observations`, JSON.stringify(obs));
+  };
+
+  // Atualizar checkbox
+  const toggleCheckbox = (cardId: string, itemIndex: number) => {
+    const key = `${cardId}-${itemIndex}`;
+    const newChecked = { ...checkedItems, [key]: !checkedItems[key] };
+    setCheckedItems(newChecked);
+    saveToLocalStorage(newChecked, observations);
+  };
+
+  // Atualizar observação
+  const updateObservation = (cardId: string, itemIndex: number, value: string) => {
+    const key = `${cardId}-${itemIndex}`;
+    const newObservations = { ...observations, [key]: value };
+    setObservations(newObservations);
+    saveToLocalStorage(checkedItems, newObservations);
+  };
+
+  // Calcular progresso do card
+  const getCardProgress = (cardId: string, checklistLength: number) => {
+    let completed = 0;
+    for (let i = 0; i < checklistLength; i++) {
+      if (checkedItems[`${cardId}-${i}`]) {
+        completed++;
+      }
+    }
+    return { completed, total: checklistLength, percentage: Math.round((completed / checklistLength) * 100) };
+  };
 
   const moduleData = {
     "1": {
@@ -345,6 +397,8 @@ const ModuleDetail = () => {
             <div className="grid gap-8">
               {currentModule.cards.map((card, index) => {
                 const IconComponent = card.icon;
+                const progress = getCardProgress(card.id, card.checklist.length);
+
                 return (
                   <Card key={card.id} className="overflow-hidden hover-lift">
                     <CardHeader className="bg-white border-b">
@@ -353,8 +407,22 @@ const ModuleDetail = () => {
                           <IconComponent className="w-6 h-6 text-brand-navy" />
                         </div>
                         <div className="flex-1">
-                          <CardTitle className="text-xl mb-3 text-brand-navy">
+                          <CardTitle className="text-xl mb-3 text-brand-navy flex items-center justify-between">
                             {card.title}
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-normal text-brand-gray">
+                                {progress.completed}/{progress.total}
+                              </span>
+                              <div className="w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                <div
+                                  className="h-full bg-brand-blue transition-all duration-300"
+                                  style={{ width: `${progress.percentage}%` }}
+                                />
+                              </div>
+                              <span className="text-sm font-normal text-brand-gray">
+                                {progress.percentage}%
+                              </span>
+                            </div>
                           </CardTitle>
                           <div className="flex flex-wrap gap-2">
                             {card.badges.map((badge, badgeIndex) => (
@@ -375,15 +443,49 @@ const ModuleDetail = () => {
                         <CheckSquare className="w-5 h-5" />
                         Checklist de Implementação:
                       </h3>
-                      <div className="space-y-3">
-                        {card.checklist.map((item, itemIndex) => (
-                          <div key={itemIndex} className="flex items-start gap-3 group">
-                            <Square className="w-5 h-5 text-brand-gray flex-shrink-0 mt-0.5 group-hover:text-brand-blue transition-colors" />
-                            <span className="text-brand-gray group-hover:text-brand-navy transition-colors">
-                              {item}
-                            </span>
-                          </div>
-                        ))}
+                      <div className="space-y-6">
+                        {card.checklist.map((item, itemIndex) => {
+                          const key = `${card.id}-${itemIndex}`;
+                          const isChecked = checkedItems[key] || false;
+                          const observation = observations[key] || '';
+
+                          return (
+                            <div key={itemIndex} className="border rounded-lg p-4 bg-gray-50/50">
+                              <div className="flex items-start gap-3 mb-3">
+                                <Checkbox
+                                  id={key}
+                                  checked={isChecked}
+                                  onCheckedChange={() => toggleCheckbox(card.id, itemIndex)}
+                                  className="mt-0.5"
+                                />
+                                <label
+                                  htmlFor={key}
+                                  className={`text-sm flex-1 cursor-pointer transition-colors ${
+                                    isChecked
+                                      ? 'text-brand-navy font-medium line-through'
+                                      : 'text-brand-gray hover:text-brand-navy'
+                                  }`}
+                                >
+                                  {item}
+                                </label>
+                              </div>
+                              <div className="ml-7">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <MessageSquare className="w-4 h-4 text-brand-gray" />
+                                  <span className="text-sm font-medium text-brand-gray">
+                                    Observações:
+                                  </span>
+                                </div>
+                                <Textarea
+                                  placeholder="Adicione observações, links, ou notas sobre esta tarefa..."
+                                  value={observation}
+                                  onChange={(e) => updateObservation(card.id, itemIndex, e.target.value)}
+                                  className="min-h-[80px] text-sm"
+                                />
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
                     </CardContent>
                   </Card>
@@ -394,12 +496,43 @@ const ModuleDetail = () => {
             <div className="mt-12 text-center">
               <Card className="inline-block bg-gradient-to-r from-brand-blue/5 to-accent/5 border-brand-blue/20">
                 <CardContent className="p-6">
-                  <h3 className="font-bold text-brand-navy mb-2">
-                    Total de Tarefas: {currentModule.cards.reduce((total, card) => total + card.checklist.length, 0)}
-                  </h3>
-                  <p className="text-brand-gray">
-                    Cards organizados e prontos para seu sistema de gestão de projetos
-                  </p>
+                  {(() => {
+                    const totalTasks = currentModule.cards.reduce((total, card) => total + card.checklist.length, 0);
+                    let completedTasks = 0;
+                    currentModule.cards.forEach(card => {
+                      for (let i = 0; i < card.checklist.length; i++) {
+                        if (checkedItems[`${card.id}-${i}`]) {
+                          completedTasks++;
+                        }
+                      }
+                    });
+                    const overallProgress = Math.round((completedTasks / totalTasks) * 100);
+
+                    return (
+                      <>
+                        <h3 className="font-bold text-brand-navy mb-4">
+                          Progresso Geral do Módulo
+                        </h3>
+                        <div className="flex items-center justify-center gap-4 mb-4">
+                          <span className="text-lg font-semibold text-brand-navy">
+                            {completedTasks}/{totalTasks} tarefas
+                          </span>
+                          <div className="w-32 h-3 bg-gray-200 rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-brand-blue transition-all duration-500"
+                              style={{ width: `${overallProgress}%` }}
+                            />
+                          </div>
+                          <span className="text-lg font-semibold text-brand-navy">
+                            {overallProgress}%
+                          </span>
+                        </div>
+                        <p className="text-brand-gray">
+                          {currentModule.cards.length} cards organizados • Progresso salvo automaticamente
+                        </p>
+                      </>
+                    );
+                  })()}
                 </CardContent>
               </Card>
             </div>
